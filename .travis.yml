@@ -1,5 +1,5 @@
 os: linux
-dist: xenial
+dist: trusty
 sudo: required
 addons:
   apt:
@@ -29,7 +29,7 @@ script:
 after_success:
   - export version=$(cat bootable/recovery/variables.h | grep "define TW_MAIN_VERSION_STR" | cut -d '"' -f2)
   - cp $HOME/twrp/out/target/product/grandpplte/recovery.img $HOME/twrp/TWRP-$version-grandpplte-$(date +"%Y%m%d").img
-  - cd $HOME/twrp/ && wput TWRP-$version-grandpplte-$(date +"%Y%m%d").img ftp://"$FTPUser":"$FTPPass"@"$FTPHost"//grandpplte/
+  - cd $HOME/twrp/ && wput TWRP-$version-grandpplte-$(date +"%Y%m%d").img
 
 deploy:
   skip_cleanup: true
