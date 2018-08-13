@@ -2,19 +2,19 @@ sudo: required
 services:
   - docker
 before_install:
-  - docker pull surendrajat/twrp-builder:latest
+  - docker pull yshalsager/cyanogenmod:latest
 before_script:
-  - cd $HOME && mkdir twrp
-  - wget -q https://github.com/TwrpBuilder/twrp-sources/releases/download/omni_twrp-5.1.1-cleaned/omni_twrp-5.1.1_cleaned.tar.xz
-    -O $HOME/twrp.tar.xz
-  - tar -xJf twrp.tar.xz --directory $HOME/twrp/ && rm twrp.tar.xz
+- cd $HOME && mkdir twrp
+- wget -q https://github.com/TwrpBuilder/twrp-sources/releases/download/omni_twrp-5.1.1-20180211/omni_twrp-5.1.1-20180211-norepo.tar.xz
+  -O $HOME/twrp.tar.xz
+- tar -xJf twrp.tar.xz --directory $HOME/twrp/ && rm twrp.tar.xz
 script:
-  - cd $HOME/twrp/ && git clone https://github.com/ALGPHELLO/android_device_samsung_grandpplte.git device/samsung/grandpplte
-  - git clone https://github.com/TwrpBuilder/android_device_generic_twrpbuilder.git device/generic/twrpbuilder
-  - git clone https://github.com/omnirom/android_bootable_recovery.git bootable/recovery --depth=1
+  - cd $HOME/twrp/ && git clone -b nougat https://github.com/ALGPHELLO/android_twrp_samsung_grandpplte.git device/samsung/grandpplte
+  - git clone https://github.com/TwrpBuilder/device_generic_twrpbuilder.git device/generic/twrpbuilder
+  - rm -rf bootable/recovery && git clone https://github.com/omnirom/android_bootable_recovery.git bootable/recovery
   - |
-    docker run --rm -i -v "$(pwd):/root/twrp/:rw,z" surendrajat/twrp-builder bash << EOF
-    cd /root/twrp/
+    docker run --rm -i -e USER_ID=$(id -u) -e GROUP_ID=$(id -g) -v "$(pwd):/home/cmbuild/twrp/:rw,z" yshalsager/cyanogenmod bash << EOF
+    cd /home/cmbuild/twrp/
     source build/envsetup.sh && lunch omni_grandpplte-eng && make -j16 recoveryimage
     exit
     EOF
@@ -30,7 +30,7 @@ deploy:
   file: $HOME/twrp/*.img
   on:
     tags: false
-    repo: ALGPHELLO/android_device_samsung_grandpplte
+    repo: ALGPHELLO/android_twrp_samsung_grandpplte
     branch: master
 branches:
   except:
